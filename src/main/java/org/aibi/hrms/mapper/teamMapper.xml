@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="TeamMapper">
+
+    <resultMap id="teamResultMap" type="org.aibi.hrms.pojo.Team">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <insert id="save" keyProperty="id">
+        insert into team (name) values (#{name} )
+    </insert>
+    <update id="update" >
+        update team set name = #{name} where id = #{id}
+    </update>
+
+    <delete id="delete" >
+        delete from team where id = #{id}
+    </delete>
+    <select id="findById"  resultMap="teamResultMap">
+        SELECT * from team where id = #{id}
+    </select>
+    <select id="findAll" resultMap="teamResultMap">
+        select * from team;
+    </select>
+</mapper>

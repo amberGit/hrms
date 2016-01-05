@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="IdentityMapper">
+
+    <resultMap id="identityResultMap" type="org.aibi.hrms.pojo.Identity">
+        <id property="id" column="i_id"/>
+        <result property="lft" column="lft"/>
+        <result property="rgt" column="rgt"/>
+        <result property="layer" column="layer"/>
+        <association property="person" column="pid" resultMap="personMap"/>
+        <association property="team" column="tid" resultMap="teamMap"/>
+    </resultMap>
+    <resultMap id="personMap" type="org.aibi.hrms.pojo.Person">
+        <result property="id" column="p_id"/>
+        <result property="name" column="p_name"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+    <resultMap id="teamMap" type="org.aibi.hrms.pojo.Team">
+        <result property="id" column="t_id"/>
+        <result property="name" column="t_name"/>
+    </resultMap>
+
+    <insert id="save" keyProperty="id">
+        insert into identity(pid, tid, lft, rgt, layer)  values (#{person.id}, #{team.id}, #{lft}, #{rgt}, #{layer})
+    </insert>
+    <update id="update_rgt" >
+        update identity set rgt = rgt + 2 where rgt >= #{rgt}
+    </update>
+    <update id="update_lft">
+        update identity set lft = lft + 2 where lft >= #{rgt}
+    </update>
+    <update id="update_person">
+        update identity set pid = #{newPid} where pid = #{oldPid} and tid = #{tid}
+    </update>
+
+    <select id="findById"  resultMap="identityResultMap">
+        SELECT
+        i.id as i_id,
+        pid,
+        tid,
+        lft,
+        rgt,
+        layer,
+        person.id as p_id,
+        person.name as p_name,
+        create_date,
+        team.id as t_id,
+        team.name as t_name
+        from IDENTITY i
+        left outer join person on pid = person.id
+        left outer join team on tid = team.id
+        where i.id = #{id}
+    </select>
+    <select id="findAll" resultMap="identityResultMap">
+        SELECT
+         i.id as i_id,
+        pid,
+        tid,
+        lft,
+        rgt,
+        layer,
+        person.id as p_id,
+        person.name as p_name,
+        create_date,
+        team.id as t_id,
+        team.name as t_name
+        from IDENTITY i
+        left outer join person on pid = person.id
+        left outer join team on tid = team.id
+    </select>
+</mapper>

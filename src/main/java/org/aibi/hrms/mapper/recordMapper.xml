@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="RecordMapper">
+
+    <resultMap id="recordResultMap" type="org.aibi.hrms.pojo.Record">
+        <id property="id" column="id"/>
+        <result property="amount" column="amount"/>
+        <result property="rid" column="rid"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="installmentId" column="installment_id"/>
+    </resultMap>
+
+    <insert id="save" keyProperty="id">
+        insert into person (amount, rid, create_date, update_date) values (#{amount}, #{rid}, now(), now())
+    </insert>
+    <update id="update" >
+        update record set amount = #{amount},update_date=now() where id = #{id}
+    </update>
+
+    <delete id="delete" >
+        delete from record where id = #{id}
+    </delete>
+    <select id="findById"  resultMap="recordResultMap">
+        SELECT * from record where id = #{id}
+    </select>
+    <select id="findAll" resultMap="recordResultMap">
+        select * from record where rid=#{rid};
+    </select>
+</mapper>
