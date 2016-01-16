@@ -21,12 +21,24 @@ public class IdentityService {
         return this.identityDAO.find();
     }
 
+    public Identity findRoot() {
+        return this.identityDAO.findRoot();
+    }
+
+    public List<Identity> findRootTreeByLevel(int layer) {
+        return this.identityDAO.findSubById(null,layer);
+    }
+
     public Identity findById(int id) {
         return this.identityDAO.findById(id);
     }
 
+    public List<Identity> findSubById(int id, int layer) {
+        return this.identityDAO.findSubById(id, layer);
+    }
+
     @Transactional(rollbackFor=Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void saveUnderSomeone(Identity parent, Identity child) throws Exception{
+    public void saveSubNode(Identity parent, Identity child) throws Exception{
         this.identityDAO.updateLft(parent.getRgt());
         this.identityDAO.updateRgt(parent.getRgt());
         child.setLft(parent.getRgt());

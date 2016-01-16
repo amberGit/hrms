@@ -55,6 +55,56 @@
         left outer join team on tid = team.id
         where i.id = #{id}
     </select>
+    <select id="findRoot"  resultMap="identityResultMap">
+        SELECT
+        i.id as i_id,
+        pid,
+        tid,
+        lft,
+        rgt,
+        layer,
+        person.id as p_id,
+        person.name as p_name,
+        create_date,
+        team.id as t_id,
+        team.name as t_name
+        from IDENTITY i
+        left outer join person on pid = person.id
+        left outer join team on tid = team.id
+        where i.lft = 1
+    </select>
+
+    <select id="findSubById"  resultMap="identityResultMap">
+        SELECT
+        i.id as i_id,
+        pid,
+        tid,
+        lft,
+        rgt,
+        layer,
+        person.id as p_id,
+        person.name as p_name,
+        create_date,
+        team.id as t_id,
+        team.name as t_name
+        from IDENTITY i
+        left outer join person on pid = person.id
+        left outer join team on tid = team.id,
+        (select lft as r_lft, rgt as r_rgt, layer as r_layer from IDENTITY
+          where
+          <if test = "id != null">
+              id = #{id}
+          </if>
+          <if test = "id == null">
+              lft = 1
+          </if>
+        ) root where
+        <![CDATA[
+          i.lft BETWEEN root.r_lft
+          and  root.r_rgt
+          and i.layer <= (root.r_layer + #{layer})
+        ]]>
+    </select>
     <select id="findAll" resultMap="identityResultMap">
         SELECT
          i.id as i_id,

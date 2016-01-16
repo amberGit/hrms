@@ -1,7 +1,23 @@
 body {
-    padding-top: 50px;
+    padding-top: 30px;
 }
 .starter-template {
+    position: relative;
     padding: 40px 15px;
     text-align: center;
 }
+
+#space-tree-container {
+    height:100%;
+    width:100%;
+    color:#ccc;
+}
+#infovis {
+    position:relative;
+    width:600px;
+    height:600px;
+    margin:auto;
+    overflow:hidden;
+    background: #000;
+}
+

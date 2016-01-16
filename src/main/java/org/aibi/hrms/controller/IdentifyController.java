@@ -1,16 +1,11 @@
 package org.aibi.hrms.controller;
 
 import org.aibi.hrms.pojo.Identity;
-import org.aibi.hrms.pojo.Team;
 import org.aibi.hrms.service.IdentityService;
 import org.aibi.hrms.service.PersonService;
 import org.aibi.hrms.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +28,19 @@ public class IdentifyController {
     public Identity getIdentity(int id) {
         return this.identityService.findById(id);
     }
+    @RequestMapping(value = "/identity/root", method = RequestMethod.GET)
+    public Identity getRoot() {
+        return this.identityService.findRoot();
+    }
+    @RequestMapping(value = "/identity/rootTree", method = RequestMethod.GET)
+    public List<Identity> findRootTreeByLevel(int level) {
+        return this.identityService.findRootTreeByLevel(level);
+    }
+
+    @RequestMapping(value = "/identity/sub", method = RequestMethod.GET)
+    public List<Identity> getSubIdentity(@RequestParam(value = "id") Integer id, @RequestParam(value = "layer") int layer) {
+        return this.identityService.findSubById(id, layer);
+    }
 
     @RequestMapping(value = "/identity/all", method = RequestMethod.GET)
     public List<Identity> getIdentityAll() {
@@ -40,11 +48,11 @@ public class IdentifyController {
     }
 
     @RequestMapping(value = "/identity", method = RequestMethod.PUT)
-    public void addIdentity(int id, int pid) throws Exception {
-        Identity parent = getIdentity(id);
+    public void addIdentity(int parentId, int childPersonId) throws Exception {
+        Identity parent = getIdentity(parentId);
         Identity child = new Identity();
-        child.setPerson(personService.findById(pid));
-        child.setTeam(teamService.findById(1));
-        this.identityService.saveUnderSomeone(parent, child);
+        child.setPerson(personService.findById(childPersonId));
+        child.setTeam(teamService.findById(parent.getTeam().getId()));
+        this.identityService.saveSubNode(parent, child);
     }
 }

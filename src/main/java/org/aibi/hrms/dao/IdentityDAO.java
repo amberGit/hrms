@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by John on 2015/12/27.
@@ -19,6 +21,17 @@ public class IdentityDAO {
 
     public List<Identity> find() {
         return this.sqlSession.selectList("IdentityMapper.findAll");
+    }
+
+    public  Identity findRoot() {
+        return  this.sqlSession.selectOne("IdentityMapper.findRoot");
+    }
+
+    public List<Identity> findSubById(Integer id, int layer) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("layer", layer);
+        return sqlSession.selectList("IdentityMapper.findSubById", params);
     }
 
     public Identity findById(int id) {
