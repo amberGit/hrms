@@ -23,13 +23,17 @@ public class PersonDAO {
         return  sqlSession.selectOne("PersonMapper.findById", params);
     }
 
+    public Person findByName(String name) {
+        return  sqlSession.selectOne("PersonMapper.findByName", name);
+    }
+
     public List<Person> findAll() {
         return sqlSession.selectList("PersonMapper.findAll");
     }
-    public void save(Person person) {
+    public int save(Person person) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("person", person);
-        sqlSession.insert("PersonMapper.save", params);
+        return sqlSession.insert("PersonMapper.save", params);
     }
 
     public  Person update(Person person) {

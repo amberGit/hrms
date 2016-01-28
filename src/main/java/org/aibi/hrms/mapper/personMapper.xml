@@ -9,10 +9,10 @@
     <resultMap id="personResultMap" type="org.aibi.hrms.pojo.Person">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="createDate" column="create_Date"/>
+        <result property="createDate" column="create_date"/>
     </resultMap>
 
-    <insert id="save" keyProperty="person.id">
+    <insert id="save" useGeneratedKeys="true" keyProperty="person.id">
         insert into person (name, create_date) values (#{person.name}, NOW())
     </insert>
     <update id="update" >
@@ -25,6 +25,10 @@
     <select id="findById"  resultMap="personResultMap">
         SELECT * from person where id = #{id}
     </select>
+    <select id="findByName" resultMap="personResultMap">
+        select * from person where name = #{name} limit 1
+    </select>
+
     <select id="findAll" resultMap="personResultMap">
         select * from person;
     </select>

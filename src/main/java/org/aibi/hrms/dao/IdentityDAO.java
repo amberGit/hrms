@@ -34,6 +34,13 @@ public class IdentityDAO {
         return sqlSession.selectList("IdentityMapper.findSubById", params);
     }
 
+    public List<?> findBriefByName(String name, Integer limit) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("limit", limit);
+        return sqlSession.selectList("IdentityMapper.findBriefByName", params);
+    }
+
     public Identity findById(int id) {
         return this.sqlSession.selectOne("IdentityMapper.findById", id);
     }

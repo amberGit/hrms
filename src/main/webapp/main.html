@@ -8,6 +8,8 @@
 
     <!-- Bootstrap core css-->
     <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap-3.3.5-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="bootstrap-select-1.9.4-dist/css/bootstrap-select.min.css" rel="stylesheet">
     <!-- Custom styles for this temlate -->
     <link href="starter-template.css" rel="stylesheet">
 
@@ -37,33 +39,71 @@
 <div class="container">
 
     <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+        <h1>爱彼成员管理系统</h1>
+        <br>
 
-        <div id="infovis"></div>
         <div class="row">
-            <div class="col-sm-4">
-                <div id="operation"></div>
-            </div>
-
-            <div class="col-sm-4">
-                <div id="detail">
+            <div class="col-sm-3">
+                <div id="operation">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">详细信息</h3>
+                            <h3 class="panel-title">操作</h3>
                         </div>
                         <div class="panel-body">
-                            人员 详情
+                            <button class="btn btn-lg btn-info" id="new">添加成员</button>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-sm-7">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">人员列表</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="infovis"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <div id="log"></div>
     </div>
+
 </div><!-- /.container -->
 
+<div class="modal fade in" id="newMemberModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal">×</button>
+                <h4 id="myModalLabel">新增成员</h4>
+            </div>
 
+                <div class="modal-body">
+
+
+                    <label for="personName">姓名：</label>
+                    <input type="text" name="childPersonName" id="personName" class="form-control" placeholder="姓名" required autofocus>
+                    <br>
+                    <span>推荐人：</span>
+                    <select name="parentId" class="selectpicker" data-width="auto">
+
+                    </select>
+                    <br>
+
+
+
+
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button class="btn-primary" type="button" id="btnNew"><h5>添加</h5></button>
+
+                </div>
+
+        </div>
+    </div>
+</div>
 
 
 <!-- Bootstrap core JavaScript
@@ -74,11 +114,59 @@
 <script src="custom-space-tree.js"></script>
 <script src="bootstrap-3.3.5-dist/js/jquery-1.11.3.min.js"></script>
 <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script src="bootstrap-select-1.9.4-dist/js/bootstrap-select.min.js"></script>
 
 <!-- load on start -->
-<script>
+<script language="JavaScript">
     $(function() {
         init();
+        $("#new").click (function () {
+
+
+            // get identity limits 20
+            $.get("http://localhost:8080/hrms/identity/brief", {}, function(data) {
+
+                data.forEach(function(elem) {
+                    $("select[name='parentId']").append("<option value='" + elem.id + "'>" + elem.name + "</option>");
+                });
+                $('.selectpicker').selectpicker('refresh'); // refresh the select picker plugin
+
+                $("#newMemberModal").modal({
+                    keyboard: true,
+                    show: true,
+                    backdrop: true
+                });
+            });
+
+            $("#btnNew").click(function () {
+                var personName = $("#personName").val();
+                var parentId = $("select[name='parentId']").val();
+                $.ajax({
+                    type: "PUT",
+                    url: "http://localhost:8080/hrms/identity",
+                    contentType: "application/json; charset=utf-8",
+                    data: {parentId: parentId, childPersonName: personName},
+                    dataType: "json",
+                    success: function() {
+                        var layer = getNodeLayer(st.graph, parentId); // TODO
+                        st.config.request(parentId, layer,{
+                            onComplete: st.config.onComplete
+                        });
+                    },
+                    error: function() {
+                        // TODO hint user request error
+                    }
+                });
+            });
+//            $("#newMemberModal").modal().css({
+//                "margin-top": function() {
+//                    return ($(this).height() / 10);
+//                },
+//                "margin-left": function() {
+//                    return ($(this).width() / 4);
+//                },
+//            });
+        });
     });
 </script>
 </body>

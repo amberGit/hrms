@@ -24,8 +24,12 @@ public class PersonService {
         return this.personDAO.findById(id);
     }
 
-    public void save(Person person) {
+    public Person findByName(String name) {
+        return personDAO.findByName(name);
+    }
+    public int save(Person person) {
         this.personDAO.save(person);
+        return person.getId();
     }
 
     public Person update(Person person) {

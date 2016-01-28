@@ -25,7 +25,7 @@
     </resultMap>
 
     <insert id="save" keyProperty="id">
-        insert into identity(pid, tid, lft, rgt, layer)  values (#{person.id}, #{team.id}, #{lft}, #{rgt}, #{layer})
+        insert ignore into identity(pid, tid, lft, rgt, layer)  values (#{person.id}, #{team.id}, #{lft}, #{rgt}, #{layer})
     </insert>
     <update id="update_rgt" >
         update identity set rgt = rgt + 2 where rgt >= #{rgt}
@@ -104,6 +104,17 @@
           and  root.r_rgt
           and i.layer <= (root.r_layer + #{layer})
         ]]>
+    </select>
+    <select id="findBriefByName" resultType="org.aibi.hrms.pojo.Brief">
+        SELECT IDENTITY.id,name from identity,person where pid = person.id
+        <if test="name != null">
+           and  name like "%"#{name}"%"
+        </if>
+        <if test="name == null">
+            <if test="limit!=null">
+                limit #{limit}
+            </if>
+        </if>
     </select>
     <select id="findAll" resultMap="identityResultMap">
         SELECT

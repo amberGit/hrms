@@ -37,6 +37,10 @@ public class IdentityService {
         return this.identityDAO.findSubById(id, layer);
     }
 
+    public List<?> findBriefByName(String name, Integer limit) {
+        return this.identityDAO.findBriefByName(name, limit);
+    }
+
     @Transactional(rollbackFor=Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void saveSubNode(Identity parent, Identity child) throws Exception{
         this.identityDAO.updateLft(parent.getRgt());

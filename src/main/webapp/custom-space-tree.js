@@ -38,7 +38,7 @@ function init(){
         injectInto: 'infovis',
         //set duration for the animation
         duration: 800,
-        levelsToShow: 3,
+        levelsToShow: 2,
         //set animation transition type
         transition: $jit.Trans.Quart.easeInOut,
         //set distance between node and its children
@@ -72,8 +72,12 @@ function init(){
                 dataType: "json",
                 timeout: "10000",
                 success: function (data) {
-                    console.log(level);
-                    controller.onComplete(nodeId, data);
+                    var selectedNodeLayer = getNodeLayer(st.graph, nodeId);
+                    if (selectedNodeLayer == -1) { // avoid while request node cannot find and cause a javascript syntax error
+                        controller.onComplete();
+                        return;
+                    }
+                    controller.onComplete(nodeId, transform(data, selectedNodeLayer));
                 },
                 error: function() {
                     controller.onComplete();
@@ -90,6 +94,7 @@ function init(){
         Events: {
             enable: true,
             onClick: function (node, eventInfo, e) {
+                var layer = node.data.layer;
                 st.onClick(node.id);
             },
             onRightClick: function(node) {
@@ -161,7 +166,7 @@ function init(){
             }
         }
     });
-    console.log(st);
+    console.log(st); //TODO
     $.ajax({
         url:"http://localhost:8080/hrms/identity/rootTree",
         type: "GET",
@@ -171,7 +176,6 @@ function init(){
         success: function(data) {
             //load json data
             var stJson = transform(data, 1);
-            console.log(stJson);
             st.loadJSON(stJson);
             //compute node positions and layout
             st.compute();
@@ -187,12 +191,32 @@ function init(){
     });
 
 }
-function transform(data, level) {
+/**
+ *  get current selected node's depth
+ * @param graph
+ * @param nodeId
+ * @returns {number}
+ */
+function getNodeLayer(graph, nodeId) {
+    if (!graph) return 0;
+    var layer = -1;
+    graph.eachNode(function(n) {
+        if (n.exist && n.id == nodeId) {
+            console.log(n);
+            layer = n.data.layer;
+            return;
+        }
+    });
+    return layer;
+}
+
+function transform(data, layer) {
     var stJson,
      rootNodeData;
     if (!data) return;
+
     rootNodeData = data.filter(function (elem, index, array) {
-        return elem.layer == level;
+        return elem.layer == layer;
     });  // find root
     var root = rootNodeData[0];
     // transform root data to ST display json format

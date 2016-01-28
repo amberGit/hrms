@@ -25,7 +25,7 @@
   </filter>
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/SpringMVC</url-pattern>
   </filter-mapping>
   <!-- Spring监听器 -->
   <listener>

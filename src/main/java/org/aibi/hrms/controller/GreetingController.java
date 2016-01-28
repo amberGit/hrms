@@ -39,6 +39,7 @@ public class GreetingController {
     @RequestMapping(value = "/person", method = RequestMethod.POST)
     public Person addPerson(@RequestParam(value = "name") String name) {
         Person person = new Person();
+        System.out.println(name);
         person.setName(name);
         personService.save(person);
         return person;
