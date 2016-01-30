@@ -18,21 +18,14 @@ var labelType, useGradients, nativeTextSupport, animate;
     animate = !(iStuff || !nativeCanvasSupport);
 })();
 
-var Log = {
-    elem: false,
-    write: function(text){
-        if (!this.elem)
-            this.elem = document.getElementById('log');
-        this.elem.innerHTML = text;
-        this.elem.style.left = (500 - this.elem.offsetWidth / 2) + 'px';
-    }
-};
+
+var st; // global variable
 
 function init(){
 
     //init Spacetree
     //Create a new ST instance
-    var st = new $jit.ST({
+     st = new $jit.ST({
         //id of viz container element
         orientation: "top",
         injectInto: 'infovis',
@@ -67,7 +60,6 @@ function init(){
             $.ajax({
                 type: "GET",
                 url: "http://localhost:8080/hrms/identity/sub",
-                contentType: "application/json; charset=utf-8",
                 data: {id: nodeId, layer: level},
                 dataType: "json",
                 timeout: "10000",
@@ -85,16 +77,16 @@ function init(){
             });
         },
         onBeforeCompute: function(node){
-            Log.write("loading " + node.name);
+            //Log.write("loading " + node.name);
         },
 
         onAfterCompute: function(){
-            Log.write("done");
+            //Log.write("done");
         },
         Events: {
             enable: true,
             onClick: function (node, eventInfo, e) {
-                var layer = node.data.layer;
+                if (!node) return;
                 st.onClick(node.id);
             },
             onRightClick: function(node) {
@@ -166,12 +158,10 @@ function init(){
             }
         }
     });
-    console.log(st); //TODO
     $.ajax({
         url:"http://localhost:8080/hrms/identity/rootTree",
         type: "GET",
         dataType: "json",
-        contentType: "application/json; charset=utf-8",
         data:{level: st.config.levelsToShow},
         success: function(data) {
             //load json data
@@ -198,17 +188,16 @@ function init(){
  * @returns {number}
  */
 function getNodeLayer(graph, nodeId) {
-    if (!graph) return 0;
     var layer = -1;
-    graph.eachNode(function(n) {
-        if (n.exist && n.id == nodeId) {
-            console.log(n);
-            layer = n.data.layer;
-            return;
-        }
-    });
+    if (!graph) return layer;
+    var node = graph.getNode(nodeId);
+    if (!node && !node.data.layer) {
+        layer = node.data.layer;
+    }
     return layer;
 }
+
+
 
 function transform(data, layer) {
     var stJson,

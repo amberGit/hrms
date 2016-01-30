@@ -67,7 +67,6 @@
             </div>
         </div>
 
-        <div id="log"></div>
     </div>
 
 </div><!-- /.container -->
@@ -104,12 +103,32 @@
         </div>
     </div>
 </div>
+<div class="modal fade in" id="status">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal">&times;</button>
+                <h4>状态</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success" id="success" role="alert" style="display: none">
+                    <strong>添加成功！</strong>
+                    您成功添加了一个成员
+                </div>
+                <div class="alert alert-danger" id="error"role="alert" style="display: none">
+                    <strong>添加失败！</strong>
+                    请检查网络是否正常
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="Jit/jit.js"></script>
+<script src="Jit/jit-yc.js"></script>
 <!-- Coustom Jit Space Tree js code -->
 <script src="custom-space-tree.js"></script>
 <script src="bootstrap-3.3.5-dist/js/jquery-1.11.3.min.js"></script>
@@ -120,6 +139,10 @@
 <script language="JavaScript">
     $(function() {
         init();
+
+
+
+
         $("#new").click (function () {
 
 
@@ -142,19 +165,32 @@
                 var personName = $("#personName").val();
                 var parentId = $("select[name='parentId']").val();
                 $.ajax({
-                    type: "PUT",
-                    url: "http://localhost:8080/hrms/identity",
-                    contentType: "application/json; charset=utf-8",
+                    type: "POST",
+                    url: "/hrms/identity",
                     data: {parentId: parentId, childPersonName: personName},
                     dataType: "json",
-                    success: function() {
-                        var layer = getNodeLayer(st.graph, parentId); // TODO
-                        st.config.request(parentId, layer,{
-                            onComplete: st.config.onComplete
-                        });
+                    success: function(data) {
+                        if (data.status == "OK") {
+                            $("#newMemberModal").modal("hide");
+                            $("#success").show();
+                            $("#error").hide();
+                            $("#status").modal("show");
+
+                            //FIXME refresh data on ajax success,not stable yet
+//                            var node = st.graph.getNode(parentId);
+//                            if (!node) return;
+//                            st.removeSubtree(parentId, false, "replot"); // remove the node exist sub nodes
+//                            st.requestNodes(node, {
+//                                onComplete: st.config.onComplete
+//                            });
+                        }
+
                     },
                     error: function() {
-                        // TODO hint user request error
+                        $("#newMemberModal").modal("hide");
+                        $("#error").show();
+                        $("#success").hide();
+                        $("#status").modal("show");
                     }
                 });
             });

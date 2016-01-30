@@ -2,6 +2,7 @@ package org.aibi.hrms.controller;
 
 import org.aibi.hrms.pojo.Identity;
 import org.aibi.hrms.pojo.Person;
+import org.aibi.hrms.pojo.Response;
 import org.aibi.hrms.service.IdentityService;
 import org.aibi.hrms.service.PersonService;
 import org.aibi.hrms.service.TeamService;
@@ -56,8 +57,8 @@ public class IdentifyController {
         return this.identityService.find();
     }
 
-    @RequestMapping(value = "/identity", method = RequestMethod.PUT)
-    public void addIdentity(@RequestParam(value = "parentId") int parentId, @RequestParam(value = "childPersonName") String childPersonName) throws Exception {
+    @RequestMapping(value = "/identity", method = RequestMethod.POST)
+    public Response addIdentity(@RequestParam(value = "parentId") int parentId, @RequestParam(value = "childPersonName") String childPersonName) throws Exception {
         Identity parent = getIdentity(parentId);
         Identity child = new Identity();
         Person childPerson = personService.findByName(childPersonName);
@@ -70,7 +71,9 @@ public class IdentifyController {
         child.setPerson(childPerson);
         child.setTeam(teamService.findById(parent.getTeam().getId()));
         this.identityService.saveSubNode(parent, child);
-
+        Response response = new Response();
+        response.setStatus(Response.Status.OK);
+        return  response;
     }
 
 
